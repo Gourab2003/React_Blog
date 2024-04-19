@@ -11,7 +11,6 @@ export class Datbaseservice{
         this.client
             .setEndpoint(conf.AppwriteURL)
             .setProject(conf.AppwriteProjectId);
-            this.account = new Account(this.client);
             this.databases = new Databases(this.client);
             this.bucket = new Storage(this.client);
     }
