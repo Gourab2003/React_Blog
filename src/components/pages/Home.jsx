@@ -1,17 +1,56 @@
 import React, {useEffect, useState} from 'react'
-import appwriteService from "../../appwrite/database";
-import Container from '../Container/Container';
-import PostCard from '../PostCard';
+import appwriteService from "../../appwrite/config";
+import {Container, PostCard} from '../../components/index'
+import authService from '../../appwrite/auth';
+import { useDispatch } from 'react-redux';
+import { login, logout } from '../../store/authSlice';
 
 function Home() {
     const [posts, setPosts] = useState([])
 
+    // useEffect(() => {
+    //     authServiceObj
+    //         .getUserData()
+    //         .then((userData) => {
+    //             if (userData) {
+    //                 dispatch(login({ userData }));
+    //                 appServiceObj.getAllPosts([Query.equal("status", "active")]).then((posts) => {
+    //                     if (posts) {
+    //                         setPosts(posts.documents)
+    //                     }
+    //                 })
+    //             } else {
+    //                 dispatch(logout());
+    //             }
+    //         })
+    //         .finally(() => {
+    //             setLoading(false);
+    //             // console.log("home::posts: ", posts)
+    //         });
+    // }, [dispatch]);
+
+
+    const dispatch = useDispatch();
     useEffect(() => {
-        appwriteService.getPosts().then((posts) => {
-            if (posts) {
-                setPosts(posts.documents)
+
+        authService.getCurrentUser().then(
+            userData=>{
+                if(userData){//login
+                    dispatch(login({ userData }));
+                    appwriteService.getPosts().then((posts) => {
+                        if (posts) {
+                            setPosts(posts.documents)
+                        }
+                    })
+                }else{//no login
+                    dispatch(logout())
+                }
             }
-        })
+        )
+        // .finally(() => {
+        //     setLoading(false);
+        // console.log("home::posts: ", posts)
+        // });
     }, [])
   
     if (posts.length === 0) {
